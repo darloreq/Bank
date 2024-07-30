@@ -15,6 +15,6 @@ func (b *Bank) PutMoneyIn(user entity.User, amount entity.ChangeBalance) (entity
 	if err != nil {
 		return balance, err
 	}
-	//z goida
+
 	return balanceFromCache, nil
 }
