@@ -2,14 +2,14 @@ package bank
 
 import "coolBank/internal/entity"
 
-func (b *Bank) PutMoneyIn(user entity.User, amountPut entity.ChangeBalance) (entity.Balance, error) {
+func (b *Bank) takeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) (entity.Balance, error) {
 	balance, err := b.ShowBalance(user)
 	if err != nil {
 		return balance, err
 	}
 
 	var modifiedBalance entity.ChangeBalance
-	modifiedBalance.Amount = balance.Numbers + amountPut.Amount
+	modifiedBalance.Amount = balance.Numbers - amountTake.Amount
 
 	balanceFromCache, err := b.Repos.PutMoneyInCache(user.ID, modifiedBalance) //запись в КЕШ
 	if err != nil {

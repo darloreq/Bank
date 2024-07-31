@@ -11,7 +11,8 @@ type Bank struct {
 
 type BankReposI interface {
 	ShowBalance(userID int) (entity.Balance, error)
-	PutMoneyInCache(userID int, amount entity.ChangeBalance) (entity.Balance, error)
+	PutMoneyInCache(userID int, amountPut entity.ChangeBalance) (entity.Balance, error)
+	TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) (entity.Balance, error)
 }
 
 var (
