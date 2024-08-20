@@ -6,7 +6,11 @@ import (
 )
 
 type Bank struct {
-	Repos BankReposI
+	repos BankReposI
+}
+
+func New(repos BankReposI) *Bank {
+	return &Bank{repos: repos}
 }
 
 type BankReposI interface {

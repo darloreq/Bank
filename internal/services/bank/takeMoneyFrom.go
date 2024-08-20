@@ -18,7 +18,7 @@ func (b *Bank) TakeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) 
 		return balance, errors.New("Недостаточно средств на балансе")
 	}
 
-	balanceFromCache, err := b.Repos.TakeMoneyFromCache(user.ID, modifiedBalance) //запись в КЕШ
+	balanceFromCache, err := b.repos.TakeMoneyFromCache(user.ID, modifiedBalance) //запись в КЕШ
 	if err != nil {
 		return balance, err
 	}
