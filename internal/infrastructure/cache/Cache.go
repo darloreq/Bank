@@ -11,8 +11,9 @@ type cache struct {
 	mu     *sync.Mutex
 }
 
-func New() *cache {
+func New() *cache { //ДОБАВЬ СОЗДАНИЕ ЮЗЕРА
 	m := make(map[int]entity.Balance)
+	m[1] = entity.Balance{Numbers: 9011462}
 	mu := &sync.Mutex{}
 	return &cache{bankDB: m, mu: mu}
 }
