@@ -62,6 +62,8 @@ func (c *cache) ShowBalance(userID int) (entity.Balance, error) {
 
 	balance, ok := c.bankDB[userID]
 	if !ok {
+		//создать нового пользователя при отработке ошибки
+
 		return (entity.Balance{}), errors.New("user not found")
 	}
 
