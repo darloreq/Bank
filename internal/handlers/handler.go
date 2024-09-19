@@ -10,7 +10,7 @@ import (
 
 //хендлер для получения баланса
 
-func (h handler) ShowBalance(w http.ResponseWriter, r *http.Request) {
+func (h *handler) ShowBalance(w http.ResponseWriter, r *http.Request) {
 	UserID := chi.URLParam(r, "UserID")
 
 	trueUserID, err := strconv.Atoi(UserID)
@@ -19,7 +19,7 @@ func (h handler) ShowBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	balance, err := h.srv.ShowBalance(entity.User{ID: trueUserID})
+	balance, err := h.bankService.ShowBalance(entity.User{ID: trueUserID})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -1,19 +1,19 @@
 package handlers
 
-import "coolBank/internal/services/bank"
+import (
+	"coolBank/internal/entity"
+)
 
 type handler struct {
-	srv *bank.Bank
+	bankService HeadHandler
 }
 
-func New() *handler {
-	return &handler{}
+func New(bankService HeadHandler) *handler {
+	return &handler{bankService: bankService}
 }
 
-//прописать реализацию, все 3 метода БЛ
-
-type HeadHandler interface {
-	ShowBalance()
-	PutMoneyIn()
-	TakeMoneyFrom()
+type HeadHandler interface { //методы БЛ
+	ShowBalance(user entity.User) (entity.Balance, error)
+	PutMoneyIn(user entity.User, amountPut entity.ChangeBalance) (entity.Balance, error)
+	TakeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) (entity.Balance, error)
 }

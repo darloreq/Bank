@@ -11,7 +11,8 @@ import (
 func main() {
 	bankCache := cache.New()
 	bankService := bank.New(bankCache)
-	handler := handlers.New()
+	handler := handlers.New(bankService)
 	r := chi.NewRouter()
+	r.Get("/{UserID}", handler.ShowBalance)
 	http.ListenAndServe(":8080", r)
 }

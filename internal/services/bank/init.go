@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+//добавить разделитель операций т.к. их будет больше
+
 type Bank struct {
 	repos BankReposI
 }
