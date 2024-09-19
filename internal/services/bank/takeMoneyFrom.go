@@ -2,7 +2,6 @@ package bank
 
 import (
 	"coolBank/internal/entity"
-	"errors"
 )
 
 func (b *Bank) TakeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) (entity.Balance, error) {
@@ -15,7 +14,7 @@ func (b *Bank) TakeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) 
 	modifiedBalance.Amount = balance.Numbers - amountTake.Amount
 
 	if modifiedBalance.Amount < 0 {
-		return balance, errors.New("Недостаточно средств на балансе")
+		return balance, NotEnoughBalance
 	}
 
 	balanceFromCache, err := b.repos.TakeMoneyFromCache(user.ID, modifiedBalance) //запись в КЕШ

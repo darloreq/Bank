@@ -22,5 +22,6 @@ type BankReposI interface {
 }
 
 var (
-	NoUserError = errors.New("Такого пользователя нет в системе")
+	NoUserError      = errors.New("Такого пользователя нет в системе")
+	NotEnoughBalance = errors.New("Недостаточно средств на балансе")
 )

@@ -2,7 +2,7 @@ package cache
 
 import (
 	"coolBank/internal/entity"
-	"errors"
+	"coolBank/internal/services/bank"
 	"sync"
 )
 
@@ -42,7 +42,7 @@ func (c *cache) TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) 
 	var newBalance entity.Balance
 	newBalance.Numbers = balance.Numbers - amountTake.Amount
 	if newBalance.Numbers < 0 {
-		return (entity.Balance{}), errors.New("insufficient balance")
+		return (entity.Balance{}), bank.NotEnoughBalance
 	}
 
 	c.bankDB[userID] = balance
@@ -57,8 +57,7 @@ func (c *cache) ShowBalance(userID int) (entity.Balance, error) {
 
 	balance, ok := c.bankDB[userID]
 	if !ok {
-		return (entity.Balance{}), errors.New("user not found")
+		return (entity.Balance{}), bank.NoUserError
 	}
-
 	return balance, nil
 }
