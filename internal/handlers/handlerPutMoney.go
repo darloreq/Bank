@@ -7,7 +7,6 @@ import (
 	"strconv"
 )
 
-// что значит запись (h *handler)
 func (h *handler) PutMoneyIn(w http.ResponseWriter, r *http.Request) {
 	UserID := chi.URLParam(r, "UserID")
 

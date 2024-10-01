@@ -14,6 +14,5 @@ func New(bankService HeadHandler) *handler {
 
 type HeadHandler interface { //методы БЛ
 	ShowBalance(user entity.User) (entity.Balance, error)
-	PutMoneyIn(user entity.User, amountPut entity.ChangeBalance) (entity.Balance, error)
-	TakeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) (entity.Balance, error)
+	ChangeBalance(userID int, amount entity.ChangeBalance, operationType string) (entity.Balance, error)
 }

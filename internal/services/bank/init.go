@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-//TODO добавить разделитель операций т.к. их будет больше
+//TODO добавить разделитель операций т.к. их будет больше. через SwitchCase, объеденить путмани и тейкмани, дефолт-ошибка, отдельным го файлом
 
 type Bank struct {
 	repos BankReposI
@@ -22,6 +22,7 @@ type BankReposI interface {
 }
 
 var (
-	NoUserError      = errors.New("Такого пользователя нет в системе")
-	NotEnoughBalance = errors.New("Недостаточно средств на балансе")
+	NoUserError        = errors.New("Такого пользователя нет в системе")
+	NotEnoughBalance   = errors.New("Недостаточно средств на балансе")
+	WrongOperationType = errors.New("Неверный тип операции")
 )
