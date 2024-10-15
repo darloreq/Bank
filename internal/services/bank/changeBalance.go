@@ -2,6 +2,8 @@ package bank
 
 import "coolBank/internal/entity"
 
+// делитель операций
+
 func (b *Bank) ChangeBalance(userID int, amount entity.ChangeBalance, operationType string) (entity.Balance, error) {
 
 	user := entity.User{ID: userID}

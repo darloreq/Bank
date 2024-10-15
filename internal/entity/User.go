@@ -6,7 +6,7 @@ type User struct {
 }
 
 type Balance struct {
-	Numbers float64 //трёхзначные числа на балансе
+	Numbers float64
 }
 
 type ChangeBalance struct {
