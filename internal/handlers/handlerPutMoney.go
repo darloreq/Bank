@@ -2,10 +2,17 @@ package handlers
 
 import (
 	"coolBank/internal/entity"
+	"encoding/json"
 	"github.com/go-chi/chi"
+	"io"
 	"net/http"
 	"strconv"
 )
+
+type amount struct {
+	TotalChange   float64 `json:"total_change"`
+	OperationType string  `json:"operation_type"`
+}
 
 func (h *handler) PutMoneyIn(w http.ResponseWriter, r *http.Request) {
 	UserID := chi.URLParam(r, "UserID")
@@ -16,14 +23,30 @@ func (h *handler) PutMoneyIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//тут мы должны получить сумму, на которую пополняют баланс. Как это будет выглядеть в интерфейсе? Как это получить
+	var amount amount
 
-	balance, err := h.bankService.ShowBalance(entity.User{ID: trueUserID})
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	err = json.Unmarshal(body, &amount)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	newBalance, err := h.bankService.ChangeBalance(trueUserID, entity.ChangeBalance{Amount: amount.TotalChange}, amount.OperationType)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	jBalance, err := json.Marshal(newBalance)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	//тут изменение бала
-
+	w.Write(jBalance)
 }
+
+//TODO создание аккаунта

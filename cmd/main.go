@@ -14,5 +14,7 @@ func main() {
 	handler := handlers.New(bankService)
 	r := chi.NewRouter()
 	r.Get("/{UserID}", handler.ShowBalance)
+	r.Put("/{UserID}", handler.PutMoneyIn)
+	r.Post() //СОЗДАНИЕ НОВОГО ЮЗЕРА
 	http.ListenAndServe(":8080", r)
 }
