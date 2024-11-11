@@ -3,6 +3,7 @@ package cache
 import (
 	"coolBank/internal/entity"
 	"coolBank/internal/services/bank"
+	"math/rand"
 	"sync"
 )
 
@@ -13,7 +14,6 @@ type cache struct {
 
 func New() *cache { //TODO ДОБАВЬ СОЗДАНИЕ ЮЗЕРА и хендлер для создания юзера(изм. добавить это в методе хендлера, БЛ, кеша. Присвоение id идёт в кеше через библиотеку rand)
 	m := make(map[int]entity.Balance)
-	m[1] = entity.Balance{Numbers: 9011462}
 	mu := &sync.Mutex{}
 	return &cache{bankDB: m, mu: mu}
 }
@@ -60,4 +60,20 @@ func (c *cache) ShowBalance(userID int) (entity.Balance, error) {
 		return (entity.Balance{}), bank.NoUserError
 	}
 	return balance, nil
+}
+
+func (c *cache) MakeUser() entity.User {
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	id := rand.Int()
+	b := entity.Balance{Numbers: 0}
+
+	c.bankDB[id] = b
+
+	newUser := entity.User{ID: id, Balance: b}
+
+	return newUser
+
 }

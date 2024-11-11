@@ -17,6 +17,7 @@ type BankReposI interface {
 	ShowBalance(userID int) (entity.Balance, error)
 	PutMoneyInCache(userID int, amountPut entity.ChangeBalance) (entity.Balance, error)
 	TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) (entity.Balance, error)
+	MakeUser() entity.User
 }
 
 var (
