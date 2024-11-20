@@ -6,11 +6,16 @@ import (
 	"coolBank/internal/infrastructure/postgres"
 	bank "coolBank/internal/services/bank"
 	"github.com/go-chi/chi"
+	"log"
 	"net/http"
 )
 
 func main() {
-	dataBase := postgres.New()
+	dataBase, err := postgres.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	bankCache := cache.New()
 	bankService := bank.New(dataBase)
 	handler := handlers.New(bankService)
