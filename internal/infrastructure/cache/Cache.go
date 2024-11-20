@@ -12,7 +12,7 @@ type cache struct {
 	mu     *sync.Mutex
 }
 
-func New() *cache { //TODO ДОБАВЬ СОЗДАНИЕ ЮЗЕРА и хендлер для создания юзера(изм. добавить это в методе хендлера, БЛ, кеша. Присвоение id идёт в кеше через библиотеку rand)
+func New() *cache {
 	m := make(map[int]entity.Balance)
 	mu := &sync.Mutex{}
 	return &cache{bankDB: m, mu: mu}
