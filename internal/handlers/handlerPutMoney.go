@@ -28,16 +28,19 @@ func (h *handler) PutMoneyIn(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	err = json.Unmarshal(body, &amount)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	newBalance, err := h.bankService.ChangeBalance(trueUserID, entity.ChangeBalance{Amount: amount.TotalChange}, amount.OperationType)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	jBalance, err := json.Marshal(newBalance)
@@ -48,5 +51,3 @@ func (h *handler) PutMoneyIn(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jBalance)
 }
-
-//TODO создание аккаунта

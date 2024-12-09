@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"coolBank/internal/entity"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -20,8 +21,16 @@ type db struct {
 }
 
 func (d *db) ShowBalance(userID int) (entity.Balance, error) {
-	//TODO implement me
-	panic("implement me")
+	//queryRow запрос одной строки, query запрос нескольких
+	var balance entity.Balance
+
+	err := d.conn.QueryRow(context.Background(), "SELECT user_balance FROM user_balance WHERE user_id = $1", userID).Scan(&balance.Numbers)
+	if err != nil {
+		fmt.Println("error in query balance", err)
+		return balance, err
+	}
+
+	return balance, nil
 }
 
 func (d *db) PutMoneyInCache(userID int, amountPut entity.ChangeBalance) (entity.Balance, error) {
@@ -34,7 +43,24 @@ func (d *db) TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) (en
 	panic("implement me")
 }
 
-func (d *db) MakeUser() entity.User {
-	//TODO implement me
-	panic("implement me")
+func (d *db) MakeUser(user entity.CreateUser) (entity.User, error) {
+	var newBalance = entity.Balance{Numbers: 0}
+	var newUser entity.User
+
+	err := d.conn.QueryRow(context.Background(), "INSERT INTO users (name) VALUES ($1) RETURNING id", user.Name).Scan(&newUser.ID)
+	if err != nil {
+		fmt.Println("error in query balance", err)
+		return newUser, err
+	}
+
+	_, err = d.conn.Exec(context.Background(), "INSERT INTO user_balance (user_balance, user_id) VALUES ($1, $2)", newBalance.Numbers, newUser.ID)
+	if err != nil {
+		fmt.Println("error in query balance", err)
+		return newUser, err
+	}
+
+	newUser.Balance = newBalance
+	newUser.Name = user.Name
+
+	return newUser, err
 }
