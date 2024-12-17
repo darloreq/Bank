@@ -34,12 +34,17 @@ func (d *db) ShowBalance(userID int) (entity.Balance, error) {
 }
 
 func (d *db) PutMoneyInDB(userID int, amountPut entity.ChangeBalance) (entity.Balance, error) {
+	var newBalance = entity.Balance{Numbers: amountPut.Amount}
 
-	var ID = userID
-
-	err := d.conn.QueryRow(context.Background(), "")
+	err := d.conn.QueryRow(context.Background(), "INSERT INTO user_balance (user_balance) WHERE user_id = $1 VALUES ($2) RETURNING user_balance", userID, newBalance.Numbers).Scan(&newBalance) //возвращаю значение из ДБ, потому что соответствующий метод должен отдать в БЛ новый баланс из ДБ
+	if err != nil {
+		fmt.Println("error in query balance", err)
+		return newBalance, err
+	}
+	return newBalance, nil
 }
 
+// UPDATE user_balance FROM user_balance WHERE user_id = $1
 func (d *db) TakeMoneyInDB(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
 	//TODO implement me
 	panic("implement me")

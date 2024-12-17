@@ -11,10 +11,10 @@ func (b *Bank) PutMoneyIn(user entity.User, amountPut entity.ChangeBalance) (ent
 	var modifiedBalance entity.ChangeBalance
 	modifiedBalance.Amount = balance.Numbers + amountPut.Amount
 
-	balanceFromCache, err := b.repos.PutMoneyInDB(user.ID, modifiedBalance) //запись в КЕШ
+	balanceFromDB, err := b.repos.PutMoneyInDB(user.ID, modifiedBalance) //запись в КЕШ
 	if err != nil {
 		return balance, err
 	}
 
-	return balanceFromCache, nil
+	return balanceFromDB, nil
 }
