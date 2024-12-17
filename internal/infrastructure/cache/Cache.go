@@ -32,7 +32,7 @@ func (c *cache) PutMoneyInCache(userID int, amountPut entity.ChangeBalance) (ent
 	return balance, nil
 }
 
-func (c *cache) TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
+func (c *cache) TakeMoneyInDB(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
 
 	c.mu.Lock()
 	defer c.mu.Unlock()

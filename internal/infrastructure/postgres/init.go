@@ -33,12 +33,14 @@ func (d *db) ShowBalance(userID int) (entity.Balance, error) {
 	return balance, nil
 }
 
-func (d *db) PutMoneyInCache(userID int, amountPut entity.ChangeBalance) (entity.Balance, error) {
-	//TODO implement me
-	panic("implement me")
+func (d *db) PutMoneyInDB(userID int, amountPut entity.ChangeBalance) (entity.Balance, error) {
+
+	var ID = userID
+
+	err := d.conn.QueryRow(context.Background(), "")
 }
 
-func (d *db) TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
+func (d *db) TakeMoneyInDB(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
 	//TODO implement me
 	panic("implement me")
 }

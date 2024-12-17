@@ -15,8 +15,8 @@ func New(repos BankReposI) *Bank {
 
 type BankReposI interface {
 	ShowBalance(userID int) (entity.Balance, error)
-	PutMoneyInCache(userID int, amountPut entity.ChangeBalance) (entity.Balance, error)
-	TakeMoneyFromCache(userID int, amountTake entity.ChangeBalance) (entity.Balance, error)
+	PutMoneyInDB(userID int, amountPut entity.ChangeBalance) (entity.Balance, error)
+	TakeMoneyInDB(userID int, amountTake entity.ChangeBalance) (entity.Balance, error)
 	MakeUser(user entity.CreateUser) (entity.User, error)
 }
 
