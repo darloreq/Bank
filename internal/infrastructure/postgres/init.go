@@ -44,10 +44,9 @@ func (d *db) PutMoneyInDB(userID int, amountPut entity.ChangeBalance) (entity.Ba
 	return newBalance, nil
 }
 
-// UPDATE user_balance FROM user_balance WHERE user_id = $1
+// тебе не нужны 2 метода для изменения баланса, попробуй написать всё через changebalance
 func (d *db) TakeMoneyInDB(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (d *db) MakeUser(user entity.CreateUser) (entity.User, error) {
