@@ -17,7 +17,7 @@ func (b *Bank) TakeMoneyFrom(user entity.User, amountTake entity.ChangeBalance) 
 		return balance, NotEnoughBalance
 	}
 
-	balanceFromCache, err := b.repos.TakeMoneyInDB(user.ID, modifiedBalance) //запись в КЕШ
+	balanceFromCache, err := b.repos.PutMoneyInDB(user.ID, modifiedBalance) //запись в КЕШ
 	if err != nil {
 		return balance, err
 	}

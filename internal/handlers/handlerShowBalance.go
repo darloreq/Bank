@@ -8,8 +8,6 @@ import (
 	"strconv"
 )
 
-//хендлер для получения баланса
-
 func (h *handler) ShowBalance(w http.ResponseWriter, r *http.Request) {
 	UserID := chi.URLParam(r, "UserID")
 

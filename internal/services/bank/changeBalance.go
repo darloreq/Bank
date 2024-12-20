@@ -1,12 +1,20 @@
 package bank
 
-import "coolBank/internal/entity"
+import (
+	"coolBank/internal/entity"
+	"errors"
+)
 
 // делитель операций
 
 func (b *Bank) ChangeBalance(userID int, amount entity.ChangeBalance, operationType string) (entity.Balance, error) {
 
 	user := entity.User{ID: userID}
+
+	if amount.Amount <= 0 {
+		return entity.Balance{},
+			errors.New("amount must be greater than zero")
+	}
 
 	switch operationType {
 	case "put":

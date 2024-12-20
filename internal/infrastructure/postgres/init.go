@@ -36,17 +36,12 @@ func (d *db) ShowBalance(userID int) (entity.Balance, error) {
 func (d *db) PutMoneyInDB(userID int, amountPut entity.ChangeBalance) (entity.Balance, error) {
 	var newBalance = entity.Balance{Numbers: amountPut.Amount}
 
-	err := d.conn.QueryRow(context.Background(), "INSERT INTO user_balance (user_balance) WHERE user_id = $1 VALUES ($2) RETURNING user_balance", userID, newBalance.Numbers).Scan(&newBalance) //возвращаю значение из ДБ, потому что соответствующий метод должен отдать в БЛ новый баланс из ДБ
+	err := d.conn.QueryRow(context.Background(), "UPDATE user_balance SET user_balance = $1 WHERE user_id = $2 RETURNING user_balance", newBalance.Numbers, userID).Scan(&newBalance.Numbers)
 	if err != nil {
 		fmt.Println("error in query balance", err)
 		return newBalance, err
 	}
 	return newBalance, nil
-}
-
-// тебе не нужны 2 метода для изменения баланса, попробуй написать всё через changebalance
-func (d *db) TakeMoneyInDB(userID int, amountTake entity.ChangeBalance) (entity.Balance, error) {
-
 }
 
 func (d *db) MakeUser(user entity.CreateUser) (entity.User, error) {
