@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+//go:generate mockgen -source=init.go -destination=mocks/mock.go
+
 type Bank struct {
 	repos BankReposI
 }
