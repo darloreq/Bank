@@ -4,6 +4,8 @@ import (
 	"coolBank/internal/entity"
 )
 
+//go:generate mockgen -source=init.go -destination=mocks/mock.go
+
 type handler struct {
 	bankService HeadHandler
 }

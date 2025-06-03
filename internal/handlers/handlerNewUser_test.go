@@ -2,14 +2,18 @@ package handlers
 
 import (
 	"coolBank/internal/entity"
-	mock_bank "coolBank/internal/services/bank/mocks"
+	bank "coolBank/internal/handlers/mocks"
+	"github.com/go-chi/chi"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
 func TestHandler_NewUser(t *testing.T) {
-	type mockBehavior func(m *mock_bank.MockBankReposI, user entity.User)
+	type mockBehavior func(m *bank.MockHeadHandler, user entity.User)
 
 	testTable := []struct {
 		name                 string
@@ -21,17 +25,16 @@ func TestHandler_NewUser(t *testing.T) {
 	}{
 		{
 			name:      "success",
-			inputBody: `{"name": "Test"'}`,
+			inputBody: `{"name": "Test"}`,
 			inputUser: entity.User{
-				Name: "Test",
-				Balance: 0,
-
+				Name:    "Test",
+				Balance: entity.Balance{0},
 			},
-			mockBehavior: func(m *mock_bank.MockBankReposI, user entity.User) {
-				m.EXPECT().MakeUser(gomock.Any()).Return(user, nil),
+			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
+				m.EXPECT().CreateUser(gomock.Any()).Return(user)
 			},
-			expectedStatusCode: http.StatusOK,
-			expectedResponseBody: `{"name":"Test"}`,
+			expectedStatusCode:   http.StatusOK,
+			expectedResponseBody: `{"ID":0,"Balance":{"Numbers":0},"Name":"Test"}`,
 		},
 	}
 
@@ -40,8 +43,22 @@ func TestHandler_NewUser(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			newUser := mock_bank.NewMockBankReposI(ctrl)
-			tt.mockBehavior(newUser, tt.inputUser)
+			newMock := bank.NewMockHeadHandler(ctrl)
+			tt.mockBehavior(newMock, tt.inputUser)
+
+			h := New(newMock)
+
+			//Test Server
+			r := chi.NewRouter()
+			r.Post("/{UserID}", h.NewUser)
+
+			//Test Request
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/signIn", strings.NewReader(tt.inputBody))
+			r.ServeHTTP(w, req)
+
+			assert.Equal(t, tt.expectedStatusCode, w.Code)
+			assert.Equal(t, tt.expectedResponseBody, w.Body.String())
 		})
 	}
 }
