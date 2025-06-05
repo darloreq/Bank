@@ -6,48 +6,34 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
-func TestHandler_NewUser(t *testing.T) {
+func TestHandler_ShowBalance(t *testing.T) {
 	type mockBehavior func(m *bank.MockHeadHandler, user entity.User)
-
 	testTable := []struct {
 		name                 string
 		inputBody            string
-		inputUser            entity.User
+		user                 entity.User
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
 			name:      "success",
-			inputBody: `{"name": "Test"}`,
-			inputUser: entity.User{
-				Name:    "Test",
-				Balance: entity.Balance{0},
+			inputBody: `{"UserID":"0"}`,
+			user: entity.User{
+				Name:    "<Test>",
+				Balance: entity.Balance{Numbers: 0},
 			},
 			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
-				m.EXPECT().CreateUser(gomock.Any()).Return(user)
+				m.EXPECT().ShowBalance(gomock.Any()).Return(entity.Balance{})
 			},
 			expectedStatusCode:   http.StatusOK,
-			expectedResponseBody: `{"ID":0,"Balance":{"Numbers":0},"Name":"Test"}`,
-		},
-		{
-			name:      "user not entered",
-			inputBody: `{}`,
-			inputUser: entity.User{
-				Name:    "Test",
-				Balance: entity.Balance{0},
-			},
-			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
-				m.EXPECT().CreateUser(gomock.Any()).Return(user)
-			},
-			expectedStatusCode:   http.StatusInternalServerError,
-			expectedResponseBody: `{"code":500,"message":"Internal Server Error"}`,
+			expectedResponseBody: `{"Balance":"0"}`,
 		},
 	}
 
@@ -57,21 +43,25 @@ func TestHandler_NewUser(t *testing.T) {
 			defer ctrl.Finish()
 
 			newMock := bank.NewMockHeadHandler(ctrl)
-			tt.mockBehavior(newMock, tt.inputUser)
+			tt.mockBehavior(newMock, tt.user)
 
 			h := New(newMock)
 
 			//Test Server
 			r := chi.NewRouter()
-			r.Post("/{UserID}", h.NewUser)
+			r.Get("/{UserID}", h.ShowBalance)
 
 			//Test Request
 			w := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/signIn", strings.NewReader(tt.inputBody))
+			req, err := http.NewRequest(http.MethodGet, "/"+tt.inputBody, nil)
+			if err != nil {
+				log.Fatal(err)
+			}
 			r.ServeHTTP(w, req)
 
 			assert.Equal(t, tt.expectedStatusCode, w.Code)
 			assert.Equal(t, tt.expectedResponseBody, w.Body.String())
 		})
 	}
+
 }
