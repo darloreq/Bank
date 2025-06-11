@@ -3,6 +3,7 @@ package handlers
 import (
 	"coolBank/internal/entity"
 	bank "coolBank/internal/handlers/mocks"
+	"errors"
 	"github.com/go-chi/chi"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -27,10 +28,11 @@ func TestHandler_ShowBalance(t *testing.T) {
 			inputBody: `{"UserID":"0"}`,
 			user: entity.User{
 				Name:    "<Test>",
+				ID:      0,
 				Balance: entity.Balance{Numbers: 0},
 			},
 			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
-				m.EXPECT().ShowBalance(gomock.Any()).Return(entity.Balance{})
+				m.EXPECT().ShowBalance(gomock.Any()).Return(entity.Balance{Numbers: user.Balance.Numbers}, errors.New("mock error"))
 			},
 			expectedStatusCode:   http.StatusOK,
 			expectedResponseBody: `{"Balance":"0"}`,
