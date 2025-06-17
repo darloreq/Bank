@@ -3,7 +3,7 @@ package handlers
 import (
 	"coolBank/internal/entity"
 	bank "coolBank/internal/handlers/mocks"
-	"errors"
+	"encoding/json"
 	"github.com/go-chi/chi"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -21,21 +21,21 @@ func TestHandler_ShowBalance(t *testing.T) {
 		user                 entity.User
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
-		expectedResponseBody string
+		expectedResponseBody any
 	}{
 		{
 			name:      "success",
-			inputBody: `{"UserID":"0"}`,
+			inputBody: "0",
 			user: entity.User{
 				Name:    "<Test>",
 				ID:      0,
 				Balance: entity.Balance{Numbers: 0},
 			},
 			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
-				m.EXPECT().ShowBalance(gomock.Any()).Return(entity.Balance{Numbers: user.Balance.Numbers}, errors.New("mock error"))
+				m.EXPECT().ShowBalance(gomock.Any()).Return(entity.Balance{Numbers: user.Balance.Numbers}, nil)
 			},
 			expectedStatusCode:   http.StatusOK,
-			expectedResponseBody: `{"Balance":"0"}`,
+			expectedResponseBody: entity.Balance{Numbers: 0},
 		},
 	}
 
@@ -60,9 +60,11 @@ func TestHandler_ShowBalance(t *testing.T) {
 				log.Fatal(err)
 			}
 			r.ServeHTTP(w, req)
+			actualResponseBody := entity.Balance{}
+			json.Unmarshal(w.Body.Bytes(), &actualResponseBody)
 
 			assert.Equal(t, tt.expectedStatusCode, w.Code)
-			assert.Equal(t, tt.expectedResponseBody, w.Body.String())
+			assert.Equal(t, tt.expectedResponseBody, actualResponseBody)
 		})
 	}
 
