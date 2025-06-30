@@ -26,7 +26,7 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 	}{
 		{
 			name:      "success put money",
-			inputBody: `{"ID": "0", "operation type": "put", amount: 100}`,
+			inputBody: `{"ID": "0", "operation type": "put", "amount": "100"}`,
 			user: entity.User{
 				Name:    "<Test>",
 				ID:      0,
@@ -50,16 +50,32 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 
 			h := New(newMock)
 
-			//Test Server
-			r := chi.NewRouter()
-			r.Put("/", h.PutMoneyIn)
+			type Input struct {
+				UserID        string `json:"ID"`
+				OperationType string `json:"operation type"`
+				Amount        string `json:"amount"`
+			}
 
-			//Test Request
-			w := httptest.NewRecorder()
-			req, err := http.NewRequest(http.MethodPut, "/", strings.NewReader(tt.inputBody))
+			var body Input
+			err := json.Unmarshal([]byte(tt.inputBody), &body)
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			UserID := body.UserID
+
+			//Test Server
+			r := chi.NewRouter()
+			r.Put("/{UserID}", h.PutMoneyIn)
+
+			//Test Request
+			w := httptest.NewRecorder()
+
+			req, err := http.NewRequest(http.MethodPut, "/"+UserID, strings.NewReader(tt.inputBody))
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			r.ServeHTTP(w, req)
 			actualResponseBody := entity.Balance{}
 			json.Unmarshal(w.Body.Bytes(), &actualResponseBody)
