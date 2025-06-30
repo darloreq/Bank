@@ -26,7 +26,7 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 	}{
 		{
 			name:      "success put money",
-			inputBody: `{"ID": "0", "operation type": "put", "amount": "100"}`,
+			inputBody: `{"ID": 0, "operation type": "put", "amount": 100}`,
 			user: entity.User{
 				Name:    "<Test>",
 				ID:      0,
@@ -50,6 +50,7 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 
 			h := New(newMock)
 
+			//Парсинг inputBody для считывания ID
 			type Input struct {
 				UserID        string `json:"ID"`
 				OperationType string `json:"operation type"`
