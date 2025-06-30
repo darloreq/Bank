@@ -4,10 +4,10 @@ import (
 	"coolBank/internal/entity"
 	bank "coolBank/internal/handlers/mocks"
 	"encoding/json"
+	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -15,25 +15,24 @@ import (
 )
 
 func TestHandler_PutMoneyIn(t *testing.T) {
-	type mockBehavior func(m *bank.MockHeadHandler, user entity.User)
+	type mockBehavior func(m *bank.MockHeadHandler)
 	testTable := []struct {
 		name                 string
-		inputBody            string
-		user                 entity.User
-		mockBehavior         mockBehavior
+		userID               int
+		body                 amount
+		bankUseCase          mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody any
 	}{
 		{
-			name:      "success put money",
-			inputBody: `{"ID": 0, "operation type": "put", "amount": 100}`,
-			user: entity.User{
-				Name:    "<Test>",
-				ID:      0,
-				Balance: entity.Balance{Numbers: 0},
+			name: "success put money",
+			bankUseCase: func(m *bank.MockHeadHandler) {
+				m.EXPECT().ChangeBalance(0, entity.ChangeBalance{Amount: 100}, "put").Return(entity.Balance{Numbers: 100}, nil)
 			},
-			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
-				m.EXPECT().ChangeBalance(gomock.Any(), gomock.Any(), gomock.Any()).Return(entity.Balance{Numbers: user.Balance.Numbers}, nil)
+			userID: 0,
+			body: amount{
+				OperationType: "put",
+				TotalChange:   100,
 			},
 			expectedStatusCode:   http.StatusOK,
 			expectedResponseBody: entity.Balance{Numbers: 100},
@@ -46,24 +45,15 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 			defer ctrl.Finish()
 
 			newMock := bank.NewMockHeadHandler(ctrl)
-			tt.mockBehavior(newMock, tt.user)
+			tt.bankUseCase(newMock)
 
 			h := New(newMock)
 
-			//Парсинг inputBody для считывания ID
-			type Input struct {
-				UserID        string `json:"ID"`
-				OperationType string `json:"operation type"`
-				Amount        string `json:"amount"`
-			}
-
-			var body Input
-			err := json.Unmarshal([]byte(tt.inputBody), &body)
+			requestBody, err := json.Marshal(tt.body)
 			if err != nil {
-				log.Fatal(err)
+				t.Fatal(err)
+				return
 			}
-
-			UserID := body.UserID
 
 			//Test Server
 			r := chi.NewRouter()
@@ -72,9 +62,10 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 			//Test Request
 			w := httptest.NewRecorder()
 
-			req, err := http.NewRequest(http.MethodPut, "/"+UserID, strings.NewReader(tt.inputBody))
+			req, err := http.NewRequest(http.MethodPut, "/"+fmt.Sprintf("%d", tt.userID), strings.NewReader(string(requestBody)))
 			if err != nil {
-				log.Fatal(err)
+				t.Fatal(err)
+				return
 			}
 
 			r.ServeHTTP(w, req)
