@@ -37,6 +37,32 @@ func TestHandler_PutMoneyIn(t *testing.T) {
 			expectedStatusCode:   http.StatusOK,
 			expectedResponseBody: entity.Balance{Numbers: 100},
 		},
+		{
+			name: "success take money",
+			bankUseCase: func(m *bank.MockHeadHandler) {
+				m.EXPECT().ChangeBalance(0, entity.ChangeBalance{Amount: 100}, "take").Return(entity.Balance{Numbers: 0}, nil)
+			},
+			userID: 0,
+			body: amount{
+				OperationType: "take",
+				TotalChange:   100,
+			},
+			expectedStatusCode:   http.StatusOK,
+			expectedResponseBody: entity.Balance{Numbers: 0},
+		},
+		{
+			name: "wrong operation type", //ожидаем тейк, но приходит пут. Хендлер должен отдать нам бедРеквест, но вылетает ошибка
+			bankUseCase: func(m *bank.MockHeadHandler) {
+				m.EXPECT().ChangeBalance(0, entity.ChangeBalance{Amount: 100}, "take").Return(entity.Balance{Numbers: 0}, http.StatusBadRequest)
+			},
+			userID: 0,
+			body: amount{
+				OperationType: "put",
+				TotalChange:   100,
+			},
+			expectedStatusCode:   http.StatusBadRequest,
+			expectedResponseBody: entity.Balance{Numbers: 0},
+		},
 	}
 
 	for _, tt := range testTable {
