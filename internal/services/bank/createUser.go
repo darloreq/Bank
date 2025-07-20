@@ -1,12 +1,14 @@
 package bank
 
-import "coolBank/internal/entity"
+import (
+	"coolBank/internal/entity"
+)
 
-func (b *Bank) CreateUser(user entity.CreateUser) entity.User {
+func (b *Bank) CreateUser(user entity.CreateUser) (entity.User, error) {
 
 	newUser, err := b.repos.MakeUser(user)
 	if err != nil {
-		return entity.User{}
+		return entity.User{}, err
 	}
-	return newUser
+	return newUser, err
 }

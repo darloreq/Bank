@@ -40,6 +40,12 @@ func (h *handler) PutMoneyIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if amount.TotalChange <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("amount is negative or zero"))
+		return
+	}
+
 	newBalance, err := h.bankService.ChangeBalance(trueUserID, entity.ChangeBalance{Amount: amount.TotalChange}, amount.OperationType)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

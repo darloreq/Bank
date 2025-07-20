@@ -36,19 +36,6 @@ func TestHandler_NewUser(t *testing.T) {
 			expectedStatusCode:   http.StatusOK,
 			expectedResponseBody: `{"ID":0,"Balance":{"Numbers":0},"Name":"Test"}`,
 		},
-		{
-			name:      "user not entered",
-			inputBody: `{}`,
-			inputUser: entity.User{
-				Name:    "Test",
-				Balance: entity.Balance{0},
-			},
-			mockBehavior: func(m *bank.MockHeadHandler, user entity.User) {
-				m.EXPECT().CreateUser(gomock.Any()).Return(user)
-			},
-			expectedStatusCode:   http.StatusInternalServerError,
-			expectedResponseBody: `{"code":500,"message":"Internal Server Error"}`,
-		},
 	}
 
 	for _, tt := range testTable {

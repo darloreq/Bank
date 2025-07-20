@@ -3,7 +3,6 @@ package bank
 import (
 	"coolBank/internal/entity"
 	bank "coolBank/internal/services/bank/mocks"
-	"encoding/json"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -19,12 +18,12 @@ func TestBank_CreateUser(t *testing.T) {
 		expected     entity.User
 	}{
 		{
-			name: "success",
+			name: "success create user",
 			input: entity.CreateUser{
 				Name: "test",
 			},
 			mockBehavior: func(m *bank.MockBankReposI, user entity.CreateUser) {
-				m.EXPECT().MakeUser(gomock.Any()).Return(entity.User{}, nil)
+				m.EXPECT().MakeUser(entity.CreateUser{Name: "test"}).Return(entity.User{ID: 0, Name: "test", Balance: entity.Balance{Numbers: 0}}, nil)
 			},
 			expected: entity.User{
 				Name:    "test",
@@ -44,14 +43,10 @@ func TestBank_CreateUser(t *testing.T) {
 
 			b := New(newBank)
 
-			var TestUser entity.CreateUser
-
-			err := json.Unmarshal([]byte(tt.input.Name), &TestUser)
+			NewTestUser, err := b.CreateUser(tt.input)
 			if err != nil {
 				log.Fatal()
 			}
-
-			NewTestUser := b.CreateUser(TestUser) //TODO Не съедает имя
 
 			assert.Equal(t, tt.expected, NewTestUser)
 
